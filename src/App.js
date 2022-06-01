@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import Papa from 'papaparse';
 import { PatientDataContext } from './patient_data_context';
-import { HashRouter, Route, Routes, useNavigate } from 'react-router-dom';
+import { HashRouter, NavLink, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 
 const Intake = () => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -50,6 +50,40 @@ const Home = () => {
   return <div>This is the homepage</div>;
 };
 
+const links = [
+  {
+    text: 'Home',
+    slug: '/',
+  },
+  {
+    text: 'Load File',
+    slug: '/intake',
+  },
+  {
+    text: 'Patients',
+    slug: '/patients',
+  },
+];
+
+const Layout = () => {
+  return (
+    <>
+      <div>
+        {links.map((link, index) => (
+          <NavLink
+            key={index}
+            to={link.slug}
+            className={({ isActive }) => (isActive ? 'text-red-500' : 'text-green-500')}
+          >
+            {link.text}
+          </NavLink>
+        ))}
+      </div>
+      <Outlet />
+    </>
+  );
+};
+
 function App() {
   const [patientData, setPatientData] = useState([]);
 
@@ -57,8 +91,12 @@ function App() {
     <PatientDataContext.Provider value={[patientData, setPatientData]}>
       <HashRouter>
         <Routes>
-          <Route path="/*" element={<Home />} />
-          <Route path="intake" element={<Intake />} />
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="intake" element={<Intake />} />
+            {/* <Route path="patients" element={<Patients />} /> */}
+            {/* <Route path="patients/:id" element={<Patient />} /> */}
+          </Route>
         </Routes>
       </HashRouter>
     </PatientDataContext.Provider>
